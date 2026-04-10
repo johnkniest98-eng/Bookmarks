@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<!-- saved from url=(0058)file:///C:/Users/johnk/Desktop/my-bookmarks-app/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookmarks</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-50:  #eff6ff;
+      --blue-100: #dbeafe;
+      --blue-200: #bfdbfe;
+      --blue-500: #3b82f6;
+      --blue-600: #2563eb;
+      --blue-700: #1d4ed8;
+      --blue-900: #1e3a8a;
+      --gray-50:  #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --red-500:  #ef4444;
+      --red-600:  #dc2626;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+      --shadow:    0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-600) 60%, #4f8ef7 100%);
+      color: #fff;
+      padding: 28px 24px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-lg);
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo svg { width: 32px; height: 32px; }
+    .logo h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.3px; }
+    .logo span { opacity: .75; font-size: .85rem; display: block; font-weight: 400; }
+
+    .add-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.2);
+      border: 1.5px solid rgba(255,255,255,.4);
+      color: #fff;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      white-space: nowrap;
+    }
+    .add-btn:hover { background: rgba(255,255,255,.3); transform: translateY(-1px); }
+    .add-btn:active { transform: none; }
+
+    .search-bar {
+      margin-top: 18px;
+      position: relative;
+    }
+    .search-bar svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      pointer-events: none;
+      width: 18px; height: 18px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 11px 14px 11px 42px;
+      border-radius: 8px;
+      border: none;
+      font-size: .95rem;
+      background: rgba(255,255,255,.15);
+      color: #fff;
+      outline: none;
+      transition: background .15s;
+      max-width: 500px;
+    }
+    .search-bar input::placeholder { color: rgba(255,255,255,.6); }
+    .search-bar input:focus { background: rgba(255,255,255,.25); }
+
+    /* ── Category filter ── */
+    .filter-strip {
+      background: #fff;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 12px 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-strip::-webkit-scrollbar { display: none; }
+    .filter-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--gray-200);
+      background: #fff;
+      color: var(--gray-700);
+      font-size: .85rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .15s;
+    }
+    .filter-btn:hover { border-color: var(--blue-500); color: var(--blue-600); }
+    .filter-btn.active {
+      background: var(--blue-600);
+      border-color: var(--blue-600);
+      color: #fff;
+    }
+    .filter-label {
+      font-size: .8rem;
+      color: var(--gray-400);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+
+    /* ── Main content ── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .stats-bar p { color: var(--gray-500); font-size: .9rem; }
+    .stats-bar strong { color: var(--gray-900); }
+
+    /* ── Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow .2s, transform .2s;
+      overflow: hidden;
+      position: relative;
+    }
+    .card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+
+    .card-accent {
+      height: 4px;
+      background: linear-gradient(90deg, var(--blue-500), #60a5fa);
+    }
+
+    .card-body { padding: 18px 18px 14px; flex: 1; }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .favicon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: var(--blue-50);
+      border: 1px solid var(--blue-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .favicon img { width: 20px; height: 20px; object-fit: contain; }
+    .favicon svg { width: 18px; height: 18px; color: var(--blue-400); }
+
+    .card-meta { flex: 1; min-width: 0; }
+    .card-title {
+      font-size: .97rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      line-height: 1.35;
+      margin-bottom: 2px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .card-url {
+      font-size: .78rem;
+      color: var(--gray-400);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-category {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 600;
+      background: var(--blue-50);
+      color: var(--blue-700);
+      border: 1px solid var(--blue-100);
+      margin-bottom: 10px;
+    }
+
+    .card-notes {
+      font-size: .82rem;
+      color: var(--gray-500);
+      line-height: 1.5;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .card-footer {
+      padding: 10px 18px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .card-date { font-size: .75rem; color: var(--gray-400); }
+
+    .card-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      width: 32px; height: 32px;
+      border-radius: 7px;
+      border: 1px solid var(--gray-200);
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s;
+      color: var(--gray-500);
+    }
+    .icon-btn:hover { border-color: var(--blue-300); color: var(--blue-600); background: var(--blue-50); }
+    .icon-btn.del:hover { border-color: #fca5a5; color: var(--red-600); background: #fef2f2; }
+    .icon-btn svg { width: 15px; height: 15px; }
+
+    .visit-link {
+      flex: 1;
+      text-align: center;
+      padding: 7px 12px;
+      background: var(--blue-600);
+      color: #fff;
+      border-radius: 7px;
+      font-size: .83rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .visit-link:hover { background: var(--blue-700); }
+
+    /* ── Empty state ── */
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--gray-400);
+    }
+    .empty svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: .4; }
+    .empty h3 { font-size: 1.2rem; color: var(--gray-500); margin-bottom: 8px; }
+    .empty p { font-size: .9rem; }
+
+    /* ── Modal ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(3px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(16px);
+      transition: transform .2s;
+    }
+    .overlay.open .modal { transform: none; }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 24px 0;
+    }
+    .modal-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--gray-900); }
+    .close-btn {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--gray-200);
+      background: #fff;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-500);
+      transition: all .15s;
+    }
+    .close-btn:hover { background: var(--gray-100); }
+    .close-btn svg { width: 16px; height: 16px; }
+
+    .modal form { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+    label { display: block; font-size: .85rem; font-weight: 600; color: var(--gray-700); margin-bottom: 5px; }
+    input[type="text"], input[type="url"], textarea, select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: .9rem;
+      color: var(--gray-900);
+      background: #fff;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--blue-500);
+      box-shadow: 0 0 0 3px var(--blue-100);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .required { color: var(--red-500); margin-left: 2px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel {
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: 1.5px solid var(--gray-200);
+      background: #fff;
+      color: var(--gray-700);
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-cancel:hover { background: var(--gray-100); }
+    .btn-save {
+      padding: 9px 22px;
+      border-radius: 8px;
+      border: none;
+      background: var(--blue-600);
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-save:hover { background: var(--blue-700); }
+
+    /* ── Confirm dialog ── */
+    .confirm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(3px);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .confirm-overlay.open { opacity: 1; pointer-events: all; }
+    .confirm-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .confirm-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .confirm-box h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--gray-900); }
+    .confirm-box p { font-size: .88rem; color: var(--gray-500); margin-bottom: 22px; }
+    .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+    .btn-del {
+      padding: 9px 22px;
+      border-radius: 8px;
+      border: none;
+      background: var(--red-500);
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-del:hover { background: var(--red-600); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      background: var(--gray-900);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: .88rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 400;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform .3s ease, opacity .3s ease;
+      pointer-events: none;
+    }
+    .toast.show { transform: none; opacity: 1; }
+
+    /* ── Dark mode toggle button ── */
+    .dark-btn {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,.4);
+      background: rgba(255,255,255,.15);
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, transform .1s;
+      flex-shrink: 0;
+    }
+    .dark-btn:hover { background: rgba(255,255,255,.3); transform: translateY(-1px); }
+    .dark-btn:active { transform: none; }
+
+    /* ── Dark mode ── */
+    body.dark {
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    body.dark .filter-strip { background: #1e293b; border-color: #334155; }
+    body.dark .filter-label { color: #475569; }
+    body.dark .filter-btn { background: #1e293b; border-color: #334155; color: #cbd5e1; }
+    body.dark .filter-btn:hover { border-color: var(--blue-500); color: #93c5fd; }
+    body.dark .filter-btn.active { background: var(--blue-600); border-color: var(--blue-600); color: #fff; }
+    body.dark .card { background: #1e293b; border-color: #334155; }
+    body.dark .card:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,.4); }
+    body.dark .card-title { color: #f1f5f9; }
+    body.dark .card-url { color: #475569; }
+    body.dark .card-notes { color: #94a3b8; }
+    body.dark .card-date { color: #475569; }
+    body.dark .card-category { background: #1e3a5f; color: #93c5fd; border-color: #1d4ed8; }
+    body.dark .favicon { background: #1e3a5f; border-color: #1d4ed8; }
+    body.dark .icon-btn { background: #1e293b; border-color: #334155; color: #94a3b8; }
+    body.dark .icon-btn:hover { background: #1e3a5f; border-color: var(--blue-500); color: #93c5fd; }
+    body.dark .icon-btn.del:hover { background: #3b0f0f; border-color: #ef4444; color: #ef4444; }
+    body.dark .stats-bar p { color: #64748b; }
+    body.dark .stats-bar strong { color: #e2e8f0; }
+    body.dark .empty h3 { color: #64748b; }
+    body.dark .empty { color: #475569; }
+    body.dark .modal { background: #1e293b; }
+    body.dark .modal-header h2 { color: #f1f5f9; }
+    body.dark .close-btn { background: #1e293b; border-color: #334155; color: #94a3b8; }
+    body.dark .close-btn:hover { background: #334155; }
+    body.dark label { color: #cbd5e1; }
+    body.dark input[type="text"],
+    body.dark input[type="url"],
+    body.dark textarea,
+    body.dark select {
+      background: #0f172a;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+    body.dark input:focus,
+    body.dark textarea:focus,
+    body.dark select:focus {
+      border-color: var(--blue-500);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+    }
+    body.dark .btn-cancel { background: #1e293b; border-color: #334155; color: #cbd5e1; }
+    body.dark .btn-cancel:hover { background: #334155; }
+    body.dark .confirm-box { background: #1e293b; }
+    body.dark .confirm-box h3 { color: #f1f5f9; }
+    body.dark .confirm-box p { color: #94a3b8; }
+
+    /* ── Card extra links ── */
+    .card-links { margin-top: 10px; display: flex; flex-direction: column; gap: 3px; }
+    .card-link {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .82rem; color: var(--blue-600);
+      text-decoration: none; border-radius: 5px;
+      padding: 3px 6px; margin-left: -6px;
+      transition: background .12s, color .12s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-link:hover { background: var(--blue-50); color: var(--blue-700); }
+    .card-link svg { flex-shrink: 0; width: 12px; height: 12px; }
+    body.dark .card-link { color: #93c5fd; }
+    body.dark .card-link:hover { background: #1e3a5f; color: #bfdbfe; }
+
+    /* ── Form link rows ── */
+    .links-col-header {
+      display: grid; grid-template-columns: 1fr 1.6fr 30px;
+      gap: 8px; font-size: .78rem; color: var(--gray-400);
+      margin-bottom: 4px; padding: 0 2px;
+    }
+    .link-row {
+      display: grid; grid-template-columns: 1fr 1.6fr 30px;
+      gap: 8px; align-items: center; margin-bottom: 6px;
+    }
+    .link-row input { margin: 0; }
+    .remove-link-btn {
+      width: 30px; height: 36px; flex-shrink: 0;
+      border-radius: 6px; border: 1.5px solid var(--gray-200);
+      background: #fff; color: var(--gray-400);
+      cursor: pointer; font-size: 1.1rem; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    .remove-link-btn:hover { border-color: #fca5a5; color: var(--red-600); background: #fef2f2; }
+    body.dark .remove-link-btn { background: #1e293b; border-color: #334155; color: #64748b; }
+    body.dark .remove-link-btn:hover { background: #3b0f0f; border-color: #ef4444; color: #ef4444; }
+    .add-link-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 7px;
+      border: 1.5px dashed var(--gray-200); background: transparent;
+      color: var(--gray-500); font-size: .83rem; cursor: pointer;
+      transition: all .15s; margin-top: 2px; font-family: inherit;
+    }
+    .add-link-btn:hover { border-color: var(--blue-400); color: var(--blue-600); background: var(--blue-50); }
+    body.dark .add-link-btn { border-color: #334155; color: #64748b; }
+    body.dark .add-link-btn:hover { border-color: var(--blue-500); color: #93c5fd; background: #1e3a5f; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      header { padding: 20px 16px 16px; }
+      .header-top { flex-wrap: wrap; }
+      main { padding: 20px 16px 48px; }
+      .filter-strip { padding: 10px 16px; }
+      .grid { grid-template-columns: 1fr; gap: 14px; }
+      .form-row { grid-template-columns: 1fr; }
+      .modal form { padding: 16px 18px 20px; }
+      .modal-header { padding: 18px 18px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="8" fill="rgba(255,255,255,.2)"></rect>
+          <path d="M10 8h12a2 2 0 0 1 2 2v14l-6-3-6 3V10a2 2 0 0 1 2-2z" fill="white" stroke="white" stroke-width="1.2" stroke-linejoin="round"></path>
+        </svg>
+        <div>
+          <h1>My Bookmarks</h1>
+          <span>Your personal link dashboard</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="dark-btn" id="darkToggle" onclick="toggleDark()" title="Switch to dark mode">🌙</button>
+        <button class="add-btn" onclick="openModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+          Add Bookmark
+        </button>
+      </div>
+    </div>
+    <div class="search-bar">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path stroke-linecap="round" d="M21 21l-4.35-4.35"></path></svg>
+      <input type="text" id="searchInput" placeholder="Search by title or category…" oninput="render()">
+    </div>
+  </div>
+</header>
+
+<!-- ── Category filter ── -->
+<div class="filter-strip">
+  <div class="filter-inner" id="filterBar"><span class="filter-label">Filter:</span><button class="filter-btn active">All</button><button class="filter-btn">Design</button><button class="filter-btn">Development</button><button class="filter-btn">Media</button><button class="filter-btn">News</button><button class="filter-btn">Productivity</button></div>
+</div>
+
+<!-- ── Main ── -->
+<main>
+  <div class="stats-bar">
+    <p id="statsText">Showing <strong>9</strong> of <strong>9</strong> bookmarks</p>
+  </div>
+  <div class="grid" id="grid">
+      <div class="card" id="card-mnt1ezspitatm25usis">
+        <div class="card-accent" style="background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">GitHub</div>
+              <div class="card-url">github.com</div>
+            </div>
+          </div>
+          <span class="card-category">Development</span>
+          <p class="card-notes">Where all my code lives.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezspitatm25usis&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezspitatm25usis&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://github.com/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-mnt1ezt7ulnkq8g3bob">
+        <div class="card-accent" style="background:linear-gradient(90deg,#f97316,#fb923c)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons(1)" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">MDN Web Docs</div>
+              <div class="card-url">developer.mozilla.org</div>
+            </div>
+          </div>
+          <span class="card-category">Development</span>
+          <p class="card-notes">Best reference for HTML, CSS &amp; JS.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezt7ulnkq8g3bob&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezt7ulnkq8g3bob&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://developer.mozilla.org/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-mnt1ezt7qy9a14nogz8">
+        <div class="card-accent" style="background:linear-gradient(90deg,#f97316,#fb923c)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons(2)" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">Hacker News</div>
+              <div class="card-url">news.ycombinator.com</div>
+            </div>
+          </div>
+          <span class="card-category">News</span>
+          <p class="card-notes">Tech news and discussion.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezt7qy9a14nogz8&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezt7qy9a14nogz8&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://news.ycombinator.com/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-mnt1ezt8yo29ubry4h">
+        <div class="card-accent" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons(3)" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">Figma</div>
+              <div class="card-url">figma.com</div>
+            </div>
+          </div>
+          <span class="card-category">Design</span>
+          <p class="card-notes">Collaborative UI design tool.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezt8yo29ubry4h&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezt8yo29ubry4h&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://figma.com/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-mnt1ezt836094e6anus">
+        <div class="card-accent" style="background:linear-gradient(90deg,#0d9488,#2dd4bf)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons(4)" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">Tailwind CSS</div>
+              <div class="card-url">tailwindcss.com</div>
+            </div>
+          </div>
+          <span class="card-category">Development</span>
+          <p class="card-notes">Utility-first CSS framework.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezt836094e6anus&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezt836094e6anus&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-mnt1ezt8ect3xsdafen">
+        <div class="card-accent" style="background:linear-gradient(90deg,#ec4899,#f472b6)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons(5)" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">Dribbble</div>
+              <div class="card-url">dribbble.com</div>
+            </div>
+          </div>
+          <span class="card-category">Design</span>
+          <p class="card-notes">Design inspiration and showcase.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezt8ect3xsdafen&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezt8ect3xsdafen&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://dribbble.com/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-mnt1ezt86unel2zo9c6">
+        <div class="card-accent" style="background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons(6)" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">Notion</div>
+              <div class="card-url">notion.so</div>
+            </div>
+          </div>
+          <span class="card-category">Productivity</span>
+          <p class="card-notes">Notes, wikis, and project management.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezt86unel2zo9c6&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezt86unel2zo9c6&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://notion.so/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-mnt1ezt9bdj815x8r5m">
+        <div class="card-accent" style="background:linear-gradient(90deg,#f97316,#fb923c)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons(7)" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">YouTube</div>
+              <div class="card-url">youtube.com</div>
+            </div>
+          </div>
+          <span class="card-category">Media</span>
+          <p class="card-notes">Videos and tutorials.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezt9bdj815x8r5m&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezt9bdj815x8r5m&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://youtube.com/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-mnt1ezt99yrhg0hbc6d">
+        <div class="card-accent" style="background:linear-gradient(90deg,#f97316,#fb923c)"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon"><img src="./My Bookmarks_files/favicons(8)" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;flex&#39;"><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"></path><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"></path></svg></div>
+            <div class="card-meta">
+              <div class="card-title">Stack Overflow</div>
+              <div class="card-url">stackoverflow.com</div>
+            </div>
+          </div>
+          <span class="card-category">Development</span>
+          <p class="card-notes">Q&amp;A for developers.</p>
+          
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Apr 10, 2026</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit(&#39;mnt1ezt99yrhg0hbc6d&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"></path></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete(&#39;mnt1ezt99yrhg0hbc6d&#39;)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"></path></svg>
+            </button>
+            <a class="visit-link" href="https://stackoverflow.com/" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div></div>
+</main>
+
+<!-- ── Add/Edit Modal ── -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Edit Bookmark</h2>
+      <button class="close-btn" onclick="closeModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <form id="bookmarkForm" onsubmit="saveBookmark(event)">
+      <div>
+        <label for="fTitle">Title <span class="required">*</span></label>
+        <input type="text" id="fTitle" placeholder="e.g. GitHub" required="">
+      </div>
+      <div>
+        <label for="fUrl">URL <span class="required">*</span></label>
+        <input type="url" id="fUrl" placeholder="https://example.com" required="">
+      </div>
+      <div class="form-row">
+        <div>
+          <label for="fCategory">Category <span class="required">*</span></label>
+          <input type="text" id="fCategory" placeholder="e.g. Development" list="categoryList" required="">
+          <datalist id="categoryList"><option value="Design"></option><option value="Development"></option><option value="Media"></option><option value="News"></option><option value="Productivity"></option></datalist>
+        </div>
+        <div>
+          <label for="fColor">Accent</label>
+          <select id="fColor">
+            <option value="blue">Blue</option>
+            <option value="purple">Purple</option>
+            <option value="green">Green</option>
+            <option value="orange">Orange</option>
+            <option value="pink">Pink</option>
+            <option value="teal">Teal</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="fNotes">Notes <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+        <textarea id="fNotes" placeholder="Any notes about this bookmark…"></textarea>
+      </div>
+      <div id="linksSection">
+        <label>Additional Links <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+        <div class="links-col-header" id="linksColHeader" style="display:none">
+          <span>Label</span><span>URL</span><span></span>
+        </div>
+        <div id="linkRows"></div>
+        <button type="button" class="add-link-btn" onclick="addLinkRow()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+          Add link
+        </button>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-save" id="saveBtn">Update Bookmark</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Confirm Delete ── -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <h3>Delete Bookmark?</h3>
+    <p>This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-del" id="confirmDelBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Accent colours ──────────────────────────────────────────────
+  const ACCENTS = {
+    blue:   'linear-gradient(90deg,#3b82f6,#60a5fa)',
+    purple: 'linear-gradient(90deg,#8b5cf6,#a78bfa)',
+    green:  'linear-gradient(90deg,#10b981,#34d399)',
+    orange: 'linear-gradient(90deg,#f97316,#fb923c)',
+    pink:   'linear-gradient(90deg,#ec4899,#f472b6)',
+    teal:   'linear-gradient(90deg,#0d9488,#2dd4bf)',
+  };
+
+  // ── Sample bookmarks ────────────────────────────────────────────
+  const SAMPLES = [
+    { id: uid(), title: 'GitHub', url: 'https://github.com', category: 'Development', notes: 'Where all my code lives.', color: 'blue', date: fmt(new Date()) },
+    { id: uid(), title: 'MDN Web Docs', url: 'https://developer.mozilla.org', category: 'Development', notes: 'Best reference for HTML, CSS & JS.', color: 'orange', date: fmt(new Date()) },
+    { id: uid(), title: 'Hacker News', url: 'https://news.ycombinator.com', category: 'News', notes: 'Tech news and discussion.', color: 'orange', date: fmt(new Date()) },
+    { id: uid(), title: 'Figma', url: 'https://figma.com', category: 'Design', notes: 'Collaborative UI design tool.', color: 'purple', date: fmt(new Date()) },
+    { id: uid(), title: 'Tailwind CSS', url: 'https://tailwindcss.com', category: 'Development', notes: 'Utility-first CSS framework.', color: 'teal', date: fmt(new Date()) },
+    { id: uid(), title: 'Dribbble', url: 'https://dribbble.com', category: 'Design', notes: 'Design inspiration and showcase.', color: 'pink', date: fmt(new Date()) },
+    { id: uid(), title: 'Notion', url: 'https://notion.so', category: 'Productivity', notes: 'Notes, wikis, and project management.', color: 'blue', date: fmt(new Date()) },
+    { id: uid(), title: 'YouTube', url: 'https://youtube.com', category: 'Media', notes: 'Videos and tutorials.', color: 'orange', date: fmt(new Date()) },
+    { id: uid(), title: 'Stack Overflow', url: 'https://stackoverflow.com', category: 'Development', notes: 'Q&A for developers.', color: 'orange', date: fmt(new Date()) },
+  ];
+
+  // ── State ───────────────────────────────────────────────────────
+  let bookmarks = [];
+  let activeCategory = 'All';
+  let editingId = null;
+  let pendingDeleteId = null;
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  function fmt(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+
+  function load() {
+    const raw = localStorage.getItem('bm_bookmarks');
+    bookmarks = raw ? JSON.parse(raw) : SAMPLES;
+    if (!raw) save();
+  }
+  function save() { localStorage.setItem('bm_bookmarks', JSON.stringify(bookmarks)); }
+
+  // ── Render ──────────────────────────────────────────────────────
+  function categories() {
+    return ['All', ...new Set(bookmarks.map(b => b.category).sort())];
+  }
+
+  function filtered() {
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    return bookmarks.filter(b => {
+      const matchCat = activeCategory === 'All' || b.category === activeCategory;
+      const matchQ   = !q || b.title.toLowerCase().includes(q) || b.category.toLowerCase().includes(q) || (b.notes || '').toLowerCase().includes(q)
+        || (b.links || []).some(l => l.label.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
+      return matchCat && matchQ;
+    });
+  }
+
+  function render() {
+    renderFilters();
+    renderGrid();
+    renderStats();
+    refreshDatalist();
+  }
+
+  function renderFilters() {
+    const bar = document.getElementById('filterBar');
+    bar.innerHTML = '<span class="filter-label">Filter:</span>';
+    categories().forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn' + (cat === activeCategory ? ' active' : '');
+      btn.textContent = cat;
+      btn.onclick = () => { activeCategory = cat; render(); };
+      bar.appendChild(btn);
+    });
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('grid');
+    const items = filtered();
+    if (items.length === 0) {
+      grid.innerHTML = `
+        <div class="empty">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M5 5h14a2 2 0 0 1 2 2v12l-5-2.5L11 19 6 21.5V7a2 2 0 0 1 2-2z M9 12h6M9 9h6"/></svg>
+          <h3>No bookmarks found</h3>
+          <p>Try a different search or category, or add a new bookmark.</p>
+        </div>`;
+      return;
+    }
+    grid.innerHTML = items.map(b => cardHTML(b)).join('');
+  }
+
+  function cardHTML(b) {
+    const accent  = ACCENTS[b.color] || ACCENTS.blue;
+    const domain  = (() => { try { return new URL(b.url).hostname; } catch { return ''; } })();
+    const faviUrl = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : '';
+    const faviHTML = faviUrl
+      ? `<img src="${faviUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><svg style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"/><path stroke-linecap="round" d="M9.33 13.5a4.5 4.5 0 0 1 5.002-6.938l1.757 1.757"/></svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#93c5fd" stroke-width="1.5"><path stroke-linecap="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"/></svg>`;
+    const notesHTML = b.notes ? `<p class="card-notes">${esc(b.notes)}</p>` : '';
+    const linksHTML = (b.links && b.links.length)
+      ? `<div class="card-links">${b.links.map(l => `
+          <a class="card-link" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+            ${esc(l.label || l.url)}
+          </a>`).join('')}</div>`
+      : '';
+    return `
+      <div class="card" id="card-${b.id}">
+        <div class="card-accent" style="background:${accent}"></div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="favicon">${faviHTML}</div>
+            <div class="card-meta">
+              <div class="card-title">${esc(b.title)}</div>
+              <div class="card-url">${esc(domain)}</div>
+            </div>
+          </div>
+          <span class="card-category">${esc(b.category)}</span>
+          ${notesHTML}
+          ${linksHTML}
+        </div>
+        <div class="card-footer">
+          <span class="card-date">${b.date}</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="Edit" onclick="openEdit('${b.id}')">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 0 1 2.828 0l.172.172a2 2 0 0 1 0 2.828L12 16H9v-3z"/></svg>
+            </button>
+            <button class="icon-btn del" title="Delete" onclick="confirmDelete('${b.id}')">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1m-4 0h10"/></svg>
+            </button>
+            <a class="visit-link" href="${esc(b.url)}" target="_blank" rel="noopener noreferrer">Visit →</a>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderStats() {
+    const items = filtered();
+    const total = bookmarks.length;
+    const shown = items.length;
+    document.getElementById('statsText').innerHTML =
+      `Showing <strong>${shown}</strong> of <strong>${total}</strong> bookmark${total !== 1 ? 's' : ''}`;
+  }
+
+  function refreshDatalist() {
+    const dl = document.getElementById('categoryList');
+    const cats = [...new Set(bookmarks.map(b => b.category).sort())];
+    dl.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Modal ───────────────────────────────────────────────────────
+  function addLinkRow(label = '', url = '') {
+    const container = document.getElementById('linkRows');
+    const row = document.createElement('div');
+    row.className = 'link-row';
+    row.innerHTML = `
+      <input type="text" placeholder="e.g. Tutorial video" value="${esc(label)}" />
+      <input type="url"  placeholder="https://…"           value="${esc(url)}"   />
+      <button type="button" class="remove-link-btn" title="Remove" onclick="this.closest('.link-row').remove(); updateLinksHeader()">×</button>`;
+    container.appendChild(row);
+    updateLinksHeader();
+  }
+
+  function clearLinkRows() {
+    document.getElementById('linkRows').innerHTML = '';
+    updateLinksHeader();
+  }
+
+  function updateLinksHeader() {
+    const rows = document.getElementById('linkRows').children;
+    document.getElementById('linksColHeader').style.display = rows.length ? 'grid' : 'none';
+  }
+
+  function collectLinks() {
+    return [...document.getElementById('linkRows').querySelectorAll('.link-row')].map(row => {
+      const inputs = row.querySelectorAll('input');
+      return { label: inputs[0].value.trim(), url: inputs[1].value.trim() };
+    }).filter(l => l.label || l.url);
+  }
+
+  function openModal() {
+    editingId = null;
+    document.getElementById('modalTitle').textContent = 'Add Bookmark';
+    document.getElementById('saveBtn').textContent = 'Save Bookmark';
+    document.getElementById('bookmarkForm').reset();
+    clearLinkRows();
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('fTitle').focus();
+  }
+
+  function openEdit(id) {
+    const b = bookmarks.find(x => x.id === id);
+    if (!b) return;
+    editingId = id;
+    document.getElementById('modalTitle').textContent = 'Edit Bookmark';
+    document.getElementById('saveBtn').textContent = 'Update Bookmark';
+    document.getElementById('fTitle').value    = b.title;
+    document.getElementById('fUrl').value      = b.url;
+    document.getElementById('fCategory').value = b.category;
+    document.getElementById('fColor').value    = b.color || 'blue';
+    document.getElementById('fNotes').value    = b.notes || '';
+    clearLinkRows();
+    (b.links || []).forEach(l => addLinkRow(l.label, l.url));
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('fTitle').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('open');
+    editingId = null;
+  }
+
+  function overlayClick(e) {
+    if (e.target === document.getElementById('overlay')) closeModal();
+  }
+
+  function saveBookmark(e) {
+    e.preventDefault();
+    const title    = document.getElementById('fTitle').value.trim();
+    const url      = document.getElementById('fUrl').value.trim();
+    const category = document.getElementById('fCategory').value.trim();
+    const color    = document.getElementById('fColor').value;
+    const notes    = document.getElementById('fNotes').value.trim();
+    const links    = collectLinks();
+
+    if (editingId) {
+      const idx = bookmarks.findIndex(x => x.id === editingId);
+      if (idx !== -1) {
+        bookmarks[idx] = { ...bookmarks[idx], title, url, category, color, notes, links };
+        showToast('Bookmark updated!');
+      }
+    } else {
+      bookmarks.unshift({ id: uid(), title, url, category, color, notes, links, date: fmt(new Date()) });
+      showToast('Bookmark saved!');
+    }
+    save();
+    closeModal();
+    render();
+  }
+
+  // ── Delete ──────────────────────────────────────────────────────
+  function confirmDelete(id) {
+    pendingDeleteId = id;
+    document.getElementById('confirmOverlay').classList.add('open');
+  }
+
+  function closeConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('open');
+    pendingDeleteId = null;
+  }
+
+  document.getElementById('confirmDelBtn').onclick = () => {
+    if (!pendingDeleteId) return;
+    bookmarks = bookmarks.filter(b => b.id !== pendingDeleteId);
+    save();
+    closeConfirm();
+    render();
+    showToast('Bookmark deleted.');
+  };
+
+  // ── Toast ───────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  // ── Keyboard shortcuts ──────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeConfirm(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      document.getElementById('searchInput').focus();
+    }
+  });
+
+  // ── Dark mode ───────────────────────────────────────────────────
+  let darkMode = localStorage.getItem('bm_dark') === 'true';
+
+  function applyDark() {
+    document.body.classList.toggle('dark', darkMode);
+    document.getElementById('darkToggle').textContent = darkMode ? '☀️' : '🌙';
+    document.getElementById('darkToggle').title = darkMode ? 'Switch to light mode' : 'Switch to dark mode';
+  }
+
+  function toggleDark() {
+    darkMode = !darkMode;
+    localStorage.setItem('bm_dark', darkMode);
+    applyDark();
+  }
+
+  // ── Boot ────────────────────────────────────────────────────────
+  load();
+  applyDark();
+  render();
+</script>
+
+
+</body></html>
